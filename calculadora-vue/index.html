@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora VueJS</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f2f2f2;
+    }
+    .calculadora {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 260px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      text-align: right;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .botoes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 15px;
+      font-size: 18px;
+      border-radius: 5px;
+      border: none;
+      background: #007BFF;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .operacao {
+      background: #28a745;
+    }
+    .igual {
+      background: #ffc107;
+      color: #000;
+      grid-column: span 2;
+    }
+    .limpar {
+      background: #dc3545;
+      grid-column: span 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="calculadora">
+    <h2>Calculadora VueJS</h2>
+    <input type="text" v-model="display" readonly>
+
+    <div class="botoes">
+      <button v-for="n in numeros" @click="adicionarNumero(n)">{{ n }}</button>
+      <button class="operacao" v-for="op in operacoes" @click="selecionarOperacao(op)">{{ op }}</button>
+      <button class="igual" @click="calcular()">=</button>
+      <button class="limpar" @click="limpar()">C</button>
+    </div>
+  </div>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          display: '',
+          numero1: null,
+          operacao: null,
+          numeros: ['7','8','9','4','5','6','1','2','3','0'],
+          operacoes: ['+', '-', '*', '/']
+        };
+      },
+      methods: {
+        adicionarNumero(n) {
+          this.display += n;
+        },
+        selecionarOperacao(op) {
+          if (this.display !== '') {
+            this.numero1 = parseFloat(this.display);
+            this.operacao = op;
+            this.display = '';
+          }
+        },
+        calcular() {
+          if (this.operacao && this.display !== '') {
+            const numero2 = parseFloat(this.display);
+            let resultado = 0;
+            switch (this.operacao) {
+              case '+': resultado = this.numero1 + numero2; break;
+              case '-': resultado = this.numero1 - numero2; break;
+              case '*': resultado = this.numero1 * numero2; break;
+              case '/': resultado = numero2 !== 0 ? this.numero1 / numero2 : 'Erro'; break;
+            }
+            this.display = resultado.toString();
+            this.numero1 = null;
+            this.operacao = null;
+          }
+        },
+        limpar() {
+          this.display = '';
+          this.numero1 = null;
+          this.operacao = null;
+        }
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>
