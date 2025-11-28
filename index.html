@@ -22,57 +22,44 @@
       text-align: center;
       width: 260px;
     }
-    input {
+
+    input, select {
       width: 100%;
       padding: 10px;
       font-size: 18px;
-      text-align: right;
       margin-bottom: 10px;
       border-radius: 5px;
       border: 1px solid #ccc;
     }
-    .botoes {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-    button {
-      padding: 15px;
-      font-size: 18px;
-      border-radius: 5px;
-      border: none;
-      background: #007BFF;
-      color: white;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .operacao {
-      background: #28a745;
-    }
-    .igual {
-      background: #ffc107;
-      color: #000;
-      grid-column: span 2;
-    }
-    .limpar {
-      background: #dc3545;
-      grid-column: span 2;
+
+    .resultado {
+      margin-top: 15px;
+      font-size: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
   <div id="app" class="calculadora">
     <h2>Calculadora VueJS</h2>
-    <input type="text" v-model="display" readonly>
 
-    <div class="botoes">
-      <button v-for="n in numeros" @click="adicionarNumero(n)">{{ n }}</button>
-      <button class="operacao" v-for="op in operacoes" @click="selecionarOperacao(op)">{{ op }}</button>
-      <button class="igual" @click="calcular()">=</button>
-      <button class="limpar" @click="limpar()">C</button>
+    <!-- Dois campos numéricos -->
+    <input type="number" v-model.number="numero1" placeholder="Digite o primeiro número">
+    <input type="number" v-model.number="numero2" placeholder="Digite o segundo número">
+
+    <!-- Select de operações -->
+    <select v-model="operacao">
+      <option value="">Selecione a operação</option>
+      <option value="soma">Somar</option>
+      <option value="subtracao">Subtrair</option>
+      <option value="multiplicacao">Multiplicar</option>
+      <option value="divisao">Dividir</option>
+    </select>
+
+    <!-- Resultado automático -->
+    <div class="resultado" v-if="resultado !== null">
+      Resultado: {{ resultado }}
     </div>
   </div>
 
@@ -80,43 +67,35 @@
     const app = Vue.createApp({
       data() {
         return {
-          display: '',
           numero1: null,
-          operacao: null,
-          numeros: ['7','8','9','4','5','6','1','2','3','0'],
-          operacoes: ['+', '-', '*', '/']
+          numero2: null,
+          operacao: "",
         };
       },
-      methods: {
-        adicionarNumero(n) {
-          this.display += n;
-        },
-        selecionarOperacao(op) {
-          if (this.display !== '') {
-            this.numero1 = parseFloat(this.display);
-            this.operacao = op;
-            this.display = '';
+
+      computed: {
+        resultado() {
+          if (this.operacao === "") return null;
+          if (this.numero1 === null || this.numero2 === null) return null;
+
+          const n1 = this.numero1;
+          const n2 = this.numero2;
+
+          switch (this.operacao) {
+            case "soma":
+              return n1 + n2;
+
+            case "subtracao":
+              return n1 - n2;
+
+            case "multiplicacao":
+              return n1 * n2;
+
+            case "divisao":
+              return n2 !== 0 ? n1 / n2 : "Erro: divisão por zero";
           }
-        },
-        calcular() {
-          if (this.operacao && this.display !== '') {
-            const numero2 = parseFloat(this.display);
-            let resultado = 0;
-            switch (this.operacao) {
-              case '+': resultado = this.numero1 + numero2; break;
-              case '-': resultado = this.numero1 - numero2; break;
-              case '*': resultado = this.numero1 * numero2; break;
-              case '/': resultado = numero2 !== 0 ? this.numero1 / numero2 : 'Erro'; break;
-            }
-            this.display = resultado.toString();
-            this.numero1 = null;
-            this.operacao = null;
-          }
-        },
-        limpar() {
-          this.display = '';
-          this.numero1 = null;
-          this.operacao = null;
+
+          return null;
         }
       }
     });
